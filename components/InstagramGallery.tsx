@@ -1,4 +1,7 @@
-export default function InstagramGallery() {
+interface InstagramGalleryProps {
+  limit?: number;
+}
+export default function InstagramGallery({ limit = 6 }: InstagramGalleryProps) {
   return (
     <section className="bg-neutral-50 py-24">
       <div className="max-w-6xl mx-auto px-6">
