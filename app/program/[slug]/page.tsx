@@ -2,7 +2,7 @@
    FILE  : app/program/[slug]/page.tsx
    TYPE  : CMS DETAIL PAGE (FINAL CLEAN)
    ===================================================== */
-
+import React from "react"
 import { notFound } from "next/navigation"
 
 /* =====================================================
@@ -122,7 +122,7 @@ export default async function ProgramDetailPage({
   /* =================================================
      AGE TARGET MAPPING
      ================================================= */
-  const ageBadges: JSX.Element[] = []
+  const ageBadges: React.ReactNode[] = [] 
 
   if (Array.isArray(age_targets)) {
     age_targets.forEach((age: any, index: number) => {
