@@ -1,0 +1,107 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import SectionAccent from "@/components/ui/SectionAccent";
+
+type GalleryItem = {
+  id: number;
+  category: string | null;
+  image: {
+    url: string;
+    formats?: {
+      medium?: { url: string };
+      small?: { url: string };
+    };
+  };
+};
+
+export default function GalleryPage() {
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [active, setActive] = useState<string>("all");
+
+  const categories = [
+    { key: "all", label: "Semua" },
+    { key: "basic", label: "Basic Drawing" },
+    { key: "grafis", label: "Komputer Grafis" },
+    { key: "3d", label: "3D" },
+    { key: "motion", label: "Motion Graphic" },
+    { key: "traditional", label: "Traditional Drawing" },
+    { key: "digital", label: "Digital Drawing" },
+  ];
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/galleries?populate=image`)
+      .then((res) => res.json())
+      .then((json) => setItems(json.data || []));
+  }, []);
+
+  const filtered =
+    active === "all"
+      ? items
+      : items.filter((i) => i.category === active);
+
+  return (
+    <main className="bg-white text-neutral-800">
+
+      {/* HEADER */}
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        <div className="max-w-3xl space-y-3">
+          <h1 className="text-3xl md:text-4xl font-semibold">
+            Gallery Karya Siswa
+          </h1>
+          <SectionAccent />
+          <p className="text-neutral-600">
+            Kumpulan hasil karya siswa dari berbagai program pembelajaran di Creativo.
+          </p>
+        </div>
+      </section>
+
+      {/* FILTER */}
+      <section className="sticky top-[72px] z-20 bg-white/90 backdrop-blur border-b">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex flex-wrap gap-2">
+          {categories.map((c) => (
+            <button
+              key={c.key}
+              onClick={() => setActive(c.key)}
+              className={`px-4 py-2 rounded-full border text-sm transition
+                ${
+                  active === c.key
+                    ? "bg-pink-600 text-white border-pink-600 font-semibold uppercase"
+                    : "border-neutral-300 hover:bg-neutral-100"
+                }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* GRID */}
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        {filtered.length === 0 ? (
+          <p className="text-neutral-500">
+            Belum ada karya untuk kategori ini.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {filtered.map((item) => {
+              const img =
+                item.image.formats?.medium?.url ||
+                item.image.formats?.small?.url ||
+                item.image.url;
+
+              return (
+                <img
+                  key={item.id}
+                  src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${img}`}
+                  alt="Karya Siswa Creativo"
+                  className="aspect-square object-cover rounded-xl hover:scale-[1.02] transition"
+                />
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
